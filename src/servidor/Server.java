@@ -8,7 +8,6 @@ public class Server {
 	private ArrayList<ServerThread> sts;
 	private ServerSocket ss;
 	public static void main(String[] args) throws Exception {
-		
 		Socket s;
 		int c =0;
 		Server serv = new Server();
@@ -55,3 +54,4 @@ public class Server {
 	}
 	
 }
+
