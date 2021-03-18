@@ -3,6 +3,8 @@ package servidor;
 import java.net.*;
 import java.util.ArrayList;
 
+import cliente.Client;
+
 public class Server {
 	
 	private ArrayList<ServerThread> sts;
@@ -18,18 +20,6 @@ public class Server {
 			serv.agregarThreadALista(st);;
 			st.start();
 		}
-		
-		
-		
-		
-		/*
-		
-		byte[] b = new byte[(int) ((int)100*Math.pow(2, 20))];
-		fis.readNBytes(b, 0, b.length);
-		OutputStream os = s.getOutputStream();
-		os.write(b, 0, b.length);
-		ss.close();
-		fis.close();*/
 	}
 	
 	public Server() throws Exception{
@@ -50,6 +40,13 @@ public class Server {
 			if(sts.get(i).darId()==id) {
 				sts.remove(i);
 			}
+		}
+	}
+	
+	public void envioMultiplesClientes(int cantidadClientes, String archivo) {
+		for(int i = 0;i<cantidadClientes;i++) {
+			Client cli = new Client(archivo);
+			cli.start();
 		}
 	}
 	

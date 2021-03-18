@@ -129,9 +129,9 @@ public class ServerThread extends Thread{
 						out.write(str.getBytes());
 
 					}else if(str.contains("B")) {
-
+						servidor.envioMultiplesClientes(5, "A");
 					}else if(str.contains("C")) {
-
+						servidor.envioMultiplesClientes(10, "A");
 					}else {
 						out.write("Seleccione una opcion adecuada\n".getBytes());
 					}
@@ -150,7 +150,7 @@ public class ServerThread extends Thread{
 						int hasheo;
 						int c = 0;
 						String llave = encypt(MB250);
-						System.out.println("El hash es: " + llave);
+						System.out.println("El hash es: " + llave+" :v");
 						out.write("ENVIAR".getBytes());
 						in.read(b);
 						boolean confirmacion = (new String(b)).contains("S");
@@ -174,11 +174,12 @@ public class ServerThread extends Thread{
 						System.out.println("Se leyo todo: "+c);
 						str = "END";
 						out.write(str.getBytes());
+						
 
 					}else if(str.contains("B")) {
-
+						servidor.envioMultiplesClientes(5, "B");
 					}else if(str.contains("C")) {
-
+						servidor.envioMultiplesClientes(10, "B");
 					}else {
 						out.write("Seleccione una opcion adecuada\n".getBytes());
 					}

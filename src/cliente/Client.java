@@ -6,7 +6,7 @@ import java.net.*;
 import java.util.Random;
 import java.util.Scanner;
 import servidor.*;
-public class Client {
+public class Client extends Thread{
 	public static void main(String[] args) throws Exception{
 		Socket s = new Socket("localhost", 6969);
 		boolean fin = false;
@@ -52,6 +52,7 @@ public class Client {
 		id = (new String(b)).trim();
 		out.write(id.getBytes());
 		String str;
+		
 		while(!fin) {
 			in.read(b, 0, b.length);
 			str = new String(b);
@@ -181,4 +182,114 @@ public class Client {
 		}
 		return s;
 	}
+	
+	private String archivo;
+	public Client(String fil) {
+		archivo = fil;
+	}
+	@Override
+	public void run() {
+		try {
+			System.out.println("Hola, soy un cliente");
+			Socket s = new Socket("localhost", 6969);
+			boolean fin = false;
+			InputStream in = s.getInputStream();
+			OutputStream out = s.getOutputStream();
+			FileOutputStream fos;
+			Scanner scan = new Scanner(System.in);
+			byte[] b = new byte[1024];
+			Random rand = new Random();
+			String id;
+			//Three hand shake
+			
+			/* Envio del SYN */
+			int synint = rand.nextInt(9000) + 1000;
+			String syn = synint + "";
+			//System.out.println("Se va a mandar el SYN: " + syn);
+			out.write(syn.getBytes());
+			//System.out.println("Se mandó el SYN: " + syn);
+			
+			/* recepcion del SYN y ACK */
+			in.read(b,0,b.length);
+			String synack = new String(b);
+			synack = synack.trim();
+			//System.out.println("Se recibió el synack: " + synack);
+			int ack = Integer.parseInt(synack.split("-")[0]);
+			int syn2 = Integer.parseInt(synack.split("-")[1]);
+			if(!(syn2==synint+1)) {
+				String e = -1+"";
+				out.write(e.getBytes());
+				System.err.println("Connection errorrrr");
+				fin = true;
+			}
+			ack++;
+
+			/* Envío del ultimo ACK */
+			if(!fin) {
+				String sack = ack+"";
+				out.write(sack.getBytes());
+
+
+				////////////////////
+				in.read(b, 0, b.length);
+				id = (new String(b)).trim();
+				out.write(id.getBytes());
+				String str = "";
+				
+				in.read(b, 0, b.length);
+				
+				out.write(archivo.getBytes());
+				
+				in.read(b,0,b.length);
+				
+				out.write("A".getBytes());
+				
+				in.read();
+				
+				out.write("S".getBytes());
+				
+				int c = 0;
+				String nomArchivo = darNombreArchivo("A",id);
+				String ruta = ServerThread.FOLDER_ROUTE+"\\ArchivosRecibidos\\"+nomArchivo;
+				
+				if("A".contains("A")){
+					//System.out.println("Te lo mando solo a ti");
+					in.read(b,0,b.length);
+					fos = new FileOutputStream(ruta);
+					
+					/*out.write(str.getBytes());*/
+					in.read(b,0,b.length);
+					
+					while(!(new String(b)).contains("END")) {
+						out.write(str.getBytes());
+						//System.out.println("Se va a a escribir algo");
+						fos.write(b);
+						//System.out.println("se 4escribio algo");
+						in.read(b,0,b.length);
+						//System.out.println("Se recibio un paquete");
+						str = "recibido";
+						//
+						
+						//System.out.println("Paquete " + c + " leido");
+						c++;
+					}
+					
+					System.out.println("Agua de uwu");
+					fos.flush();
+					String llave = ServerThread.encypt(ruta);
+					System.out.println("El hash de verificacion es: " + llave);
+					in.read(b,0,b.length);
+					str = new String(b);
+					System.out.println(str);
+				}
+				
+			}
+			
+			
+		}catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+		
+	}
+
 }
